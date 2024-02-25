@@ -1,4 +1,4 @@
-python==3.9
+python
 fastapi
 uvicorn
 requests_html

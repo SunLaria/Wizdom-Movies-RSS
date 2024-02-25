@@ -1,11 +1,22 @@
-FROM python:3.9
- 
-WORKDIR /code
- 
-COPY ./requirements.txt /code/requirements.txt
- 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
- 
-COPY ./app /code/app
- 
+# syntax=docker/dockerfile:1.4
+FROM --platform=$BUILDPLATFORM python:3.10-alpine
+
+WORKDIR /app
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# install the requirements
+COPY requirements.txt /app
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip3 install -r requirements.txt
+
+COPY . .
+
+# initialize the database (create DB, tables, populate)
+RUN python init_db.py
+
+EXPOSE 5000/tcp
+
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]

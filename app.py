@@ -1,18 +1,23 @@
+from fastapi import FastAPI
+from fastapi.responses import PlainTextResponse
 from requests_html import AsyncHTMLSession,HTML
 from bs4 import BeautifulSoup
 from rfeed import *
 
 
 
-async def rss_gen():
+from WizdomRSS import rss_gen
+
+app = FastAPI()
+
+
+@app.get("/")
+async def root():
     session = AsyncHTMLSession()
-    r = session.get("https://wizdom.xyz/")
-    r.html.render()
-    
-    movies = []
+    r = await session.get("https://wizdom.xyz/")
+    await r.html.arender()
     soup = BeautifulSoup(r.html.html,"html.parser")
-
-
+    movies = []
     for movie_card in soup.findAll("div",attrs={"class": "poster col-md-3 col-lg-2 col-xl-1 col-6"}):
         imdb = movie_card.find('a').attrs["href"].split("/movie/")[1]
         name = movie_card.find("div",attrs={"class": "v-card__title poster-title"}).text
@@ -28,4 +33,4 @@ async def rss_gen():
                     link="https://example.com/rss"
                     )
 
-    return feed.rss()
+    return PlainTextResponse(feed.rss())

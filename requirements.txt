@@ -1,5 +1,6 @@
 fastapi
-uvicorn
+uvicorn[standard]
 requests_html
 bs4
 rfeed
+playwright

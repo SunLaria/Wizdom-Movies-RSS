@@ -3,23 +3,8 @@ from fastapi.responses import PlainTextResponse
 from requests_html import AsyncHTMLSession,HTML
 from bs4 import BeautifulSoup
 from rfeed import *
-# from playwright.async_api import async_playwright
 
 app = FastAPI()
-
-
-# async def get_rendered_html(url):
-#     async with async_playwright() as p:
-#         browser = await p.chromium.launch()
-#         page = await browser.new_page()
-#         await page.goto(url)
-#         # Wait for the page to render completely
-#         await page.wait_for_load_state("networkidle")
-#         # Retrieve the HTML content
-#         html_content = await page.content()
-#         await browser.close()
-#         return html_content
-
 
 
 @app.get("/")
@@ -28,7 +13,6 @@ async def main():
     r = await session.get("https://wizdom.xyz/")
     await r.html.arender()
     text = r.html.html
-    # text = await get_rendered_html("https://wizdom.xyz/")
     print(text)
     print("render achieved")
     print("now soup....")

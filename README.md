@@ -21,7 +21,7 @@ I noticed that the site's HTML renders its movie cards with JavaScript, which pr
 
 docker:
 ```
-docker run -p 8020:8000 docker.io/randomg1/wizdom-movies-rss:1
+docker run -p 8020:8000 docker.io/randomg1/wizdom-movies-rss:2
 ```
 
 docker-compose:
@@ -29,7 +29,7 @@ docker-compose:
 version: '4'
 services:
   wizdom-movies-rss:
-    image: docker.io/randomg1/wizdom-movies-rss:1
+    image: docker.io/randomg1/wizdom-movies-rss:2
     ports:
       - "8020:8000"
 ```

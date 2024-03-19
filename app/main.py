@@ -10,9 +10,9 @@ app = FastAPI()
 @app.get("/")
 async def main():
     asession = AsyncHTMLSession()
-    max_attempts = 4
+    max_attempts = 10
     attempt = 0
-    while attempt <= max_attempts:
+    while True:
         r = await asession.get("https://wizdom.xyz/")
         print("Trying to Render Site JavaScript... ")
         try:

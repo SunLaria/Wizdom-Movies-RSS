@@ -7,8 +7,11 @@ Can be Added To Radarr as a list.
 ##  Why i made it
 
 I was trying to find a wizdom.xyz RSS Feed for my Radarr setup but couldn't find anything related on the internet.
+
 I contacted the site staff through email but received negative feedback in response.
+
 So, I decided to create it myself.
+
 I noticed that the site's HTML renders its movie cards with JavaScript, which presented some challenges for me, However, thankfully, I found the solution.
 
 ## How Its Achieved

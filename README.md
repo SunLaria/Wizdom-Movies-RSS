@@ -36,7 +36,7 @@ services:
 
 
 ## Usage
-- First Link Entry, Downloads Chromonium - Takes More Time
+- First Link Entry, Downloads Chromium - Takes More Time
 - Go To "http://localhost:8020" Or "http://127.0.0.1:8020"
 
 ## How to add to Radarr

@@ -29,6 +29,7 @@ docker-compose:
 version: '4'
 services:
   wizdom-movies-rss:
+    container_name: wizdom-rss
     image: docker.io/randomg1/wizdom-movies-rss:2
     ports:
       - "8020:8000"
@@ -42,4 +43,4 @@ services:
 ## How to add to Radarr
 
 - Settings -> Import Lists -> + -> "RSS List"
-- Add "http://wizdom-movies-rss:8020" as RSS Link
+- Add "http://your-ip:8020" as RSS Link

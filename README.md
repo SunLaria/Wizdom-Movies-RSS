@@ -4,6 +4,7 @@ Get Wizdom RSS feed using this server.
 
 Can be Added To Radarr as a list.
 
+## How Its Achieved
 - HTML Content retrived using request-html.
 - Data is Scraped using beautifulsoup4.
 - RSS is generated using rfeed.

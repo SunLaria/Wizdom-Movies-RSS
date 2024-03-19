@@ -12,19 +12,19 @@ Can be Added To Radarr as a list.
 ## Setup
 
 docker:
-'''
+```
 docker run -p 8020:8000 docker.io/randomg1/wizdom-rss:1
-'''
+```
 
 docker-compose:
-'''
+```
 version: '4'
 services:
   wizdom-rss:
     image: docker.io/randomg1/wizdom-rss:1
     ports:
       - "8020:8000"
-'''
+```
 
 
 ## Usage

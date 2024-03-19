@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import Response
 from requests_html import AsyncHTMLSession,HTML
 from bs4 import BeautifulSoup
 from rfeed import *
@@ -9,9 +9,9 @@ app = FastAPI()
 
 @app.get("/")
 async def main():
-    session = AsyncHTMLSession()
-    r = await session.get("https://wizdom.xyz/")
-    await r.html.arender()
+    asession = AsyncHTMLSession()
+    r = await asession.get("https://wizdom.xyz/")
+    await r.html.arender(wait = 1.5)
     text = r.html.html
     print(text)
     print("render achieved")
@@ -30,8 +30,8 @@ async def main():
                     description = "Hebrew Subtitles Rss Feed,",
                     language="en-US",
                     items=movies,
-                    link="https://example.com/rss"
+                    link="https://wizdom.xyz/"
                     )
 
-    return PlainTextResponse(feed.rss())
+    return Response(content=feed.rss(), media_type="application/xml")
 

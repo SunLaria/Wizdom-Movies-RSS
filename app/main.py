@@ -33,7 +33,7 @@ async def main():
         print(f"Failed To Render Site After {max_attempts} attempts")
         raise ValueError(f'Failed To Render Site After {max_attempts} attempts')
     print("Site JS Render Achieved")
-    print("Scraping Site Data")
+    print("Scraping Site Data...")
     soup = BeautifulSoup(text,"html.parser")
     movies = []
     for movie_card in soup.findAll("div",attrs={"class": "poster col-md-3 col-lg-2 col-xl-1 col-6"}):
@@ -49,6 +49,6 @@ async def main():
                     link="https://wizdom.xyz/"
                     )
     print("Movies RSS Feed Generated")
-    print("Returning Passing RSS Feed")
+    print("Returning Passing RSS Feed to Browser Client...")
     return Response(content=feed.rss(), media_type="application/xml")
 

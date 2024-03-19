@@ -36,6 +36,7 @@ services:
     image: docker.io/randomg1/wizdom-movies-rss:2
     ports:
       - "8020:8000"
+    restart: unless-stopped
 ```
 
 

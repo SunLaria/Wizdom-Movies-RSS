@@ -1,11 +1,19 @@
-# Wizdom RSS
+# Wizdom Movies RSS
 
 Get Wizdom RSS feed using this server.
 
 Can be Added To Radarr as a list.
 
+##  Why i made it
+
+I was trying to find a wizdom.xyz RSS Feed for my Radarr setup but couldn't find anything related on the internet.
+I contacted the site staff through email but received negative feedback in response.
+So, I decided to create it myself.
+I noticed that the site's HTML renders its movie cards with JavaScript, which presented some challenges for me, However, thankfully, I found the solution.
+
 ## How Its Achieved
-- HTML Content retrived using request-html.
+- JS Rendered HTML Content retrived using request-html.
+- Multiple Attempts To Achieve JS Rednered HTML.
 - Data is Scraped using beautifulsoup4.
 - RSS is generated using rfeed.
 
@@ -13,25 +21,25 @@ Can be Added To Radarr as a list.
 
 docker:
 ```
-docker run -p 8020:8000 docker.io/randomg1/wizdom-rss:1
+docker run -p 8020:8000 docker.io/randomg1/wizdom-movies-rss:1
 ```
 
 docker-compose:
 ```
 version: '4'
 services:
-  wizdom-rss:
-    image: docker.io/randomg1/wizdom-rss:1
+  wizdom-movies-rss:
+    image: docker.io/randomg1/wizdom-movies-rss:1
     ports:
       - "8020:8000"
 ```
 
 
 ## Usage
-
+- First Link Entry, Downloads Chromonium - Takes More Time
 - Go To "http://localhost:8020" Or "http://127.0.0.1:8020"
 
 ## How to add to Radarr
 
 - Settings -> Import Lists -> + -> "RSS List"
-- Add "http://wizdom-rss:8020" as RSS Link
+- Add "http://wizdom-movies-rss:8020" as RSS Link

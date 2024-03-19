@@ -10,20 +10,36 @@ app = FastAPI()
 @app.get("/")
 async def main():
     asession = AsyncHTMLSession()
-    r = await asession.get("https://wizdom.xyz/")
-    await r.html.arender(wait = 1.5)
-    text = r.html.html
-    print(text)
-    print("render achieved")
-    print("now soup....")
+    max_attempts = 4
+    attempt = 0
+    print("Trying to Render Site JavaScript... ")
+    while attempt <= max_attempts:
+        r = await asession.get("https://wizdom.xyz/")
+        try:
+            await r.html.arender()
+            search_check=r.html.find(".v-card__title")
+            if len(search_check) >1:
+                text = r.html.html
+                r.close()
+                break
+            else:
+                print(f"Site JavaScript Render Failed on attempt {attempt}.")
+                attempt += 1
+            
+        except:
+            print(f"Site JavaScript Render Failed on attempt {attempt}.")
+            attempt += 1
+    else:
+        print(f"Failed To Render Site After {max_attempts} attempts")
+        raise ValueError(f'Failed To Render Site After {max_attempts} attempts')
+    print("Site Render Achieved")
+    print("Scraping Site Data")
     soup = BeautifulSoup(text,"html.parser")
     movies = []
     for movie_card in soup.findAll("div",attrs={"class": "poster col-md-3 col-lg-2 col-xl-1 col-6"}):
-        imdb = movie_card.find('a').attrs["href"].split("/movie/")[1]
-        name = movie_card.find("div",attrs={"class": "v-card__title poster-title"}).text
         movies.append(Item(
-            title=name,
-            description=imdb
+            title=movie_card.find("div",attrs={"class": "v-card__title poster-title"}).text,
+            description=movie_card.find('a').attrs["href"].split("/movie/")[1]
         ))
 
     feed = rfeed.Feed(title="Wizdom Rss",
@@ -32,6 +48,7 @@ async def main():
                     items=movies,
                     link="https://wizdom.xyz/"
                     )
-
+    print("Movies RSS Feed Generated")
+    print("Returning Passing RSS Feed")
     return Response(content=feed.rss(), media_type="application/xml")
 

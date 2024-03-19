@@ -12,9 +12,9 @@ async def main():
     asession = AsyncHTMLSession()
     max_attempts = 4
     attempt = 0
-    print("Trying to Render Site JavaScript... ")
     while attempt <= max_attempts:
         r = await asession.get("https://wizdom.xyz/")
+        print("Trying to Render Site JavaScript... ")
         try:
             await r.html.arender()
             search_check=r.html.find(".v-card__title")
@@ -32,7 +32,7 @@ async def main():
     else:
         print(f"Failed To Render Site After {max_attempts} attempts")
         raise ValueError(f'Failed To Render Site After {max_attempts} attempts')
-    print("Site Render Achieved")
+    print("Site JS Render Achieved")
     print("Scraping Site Data")
     soup = BeautifulSoup(text,"html.parser")
     movies = []

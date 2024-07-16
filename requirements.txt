@@ -4,3 +4,4 @@ gunicorn
 selenium
 bs4
 rfeed
+loguru

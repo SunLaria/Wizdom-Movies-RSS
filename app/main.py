@@ -4,15 +4,16 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from rfeed import Item, Feed
+from loguru import logger
 import time
 import uvicorn
+
 
 app = FastAPI()
 
 
 @app.get("/")
 async def main():
-    print("Settings Up WebDriver...")
     max_attempts = 10
     max_result = 60
     options = Options()
@@ -21,14 +22,13 @@ async def main():
     options.add_argument("--no-sandbox")
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--disable-dev-shm-usage")
-    driver = webdriver.Chrome(options=options)
-
-    driver.get("https://wizdom.xyz/")
-    time.sleep(5)
-
-    movies = []
-    print("Scraping Movies....")
     try:
+        logger.debug("Starting WebDriver...")
+        driver = webdriver.Chrome(options=options)
+        driver.get("https://wizdom.xyz/")
+        time.sleep(5)
+        movies = []
+        logger.debug("Scraping Movies....")
         attempts = 0
         while attempts < max_attempts and len(movies) < max_result:
             rendered_html = driver.page_source
@@ -48,8 +48,8 @@ async def main():
                 attempts += 1
 
         driver.quit()
-        print("Movies Scrap Done!")
-        print("Generating RSS Feed...")
+        logger.success("Movies Scrap Done!")
+        logger.debug("Generating RSS Feed...")
         if len(movies) >= max_result:
             feed = Feed(
                 title="Wizdom RSS",
@@ -58,10 +58,12 @@ async def main():
                 items=movies,
                 link="https://wizdom.xyz/"
             )
+            logger.success("RSS Feed Generated!")
             return Response(content=feed.rss(), media_type="application/xml", status_code=status.HTTP_200_OK)
 
     except Exception as e:
         driver.quit()
+        logger.error("Failed to generate RSS Feed, Internet Connection?")
         return JSONResponse(content={"Error": str(e)}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

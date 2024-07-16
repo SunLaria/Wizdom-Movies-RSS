@@ -2,7 +2,7 @@ version: '4'
 services:
   wizdom-movies-rss:
     container_name: wizdom-rss
-    image: docker.io/randomg1/wizdom-movies-rss:2
+    image: docker.io/randomg1/wizdom-movies-rss:latest
     ports:
       - "8020:8000"
     restart: unless-stopped

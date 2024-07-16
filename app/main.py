@@ -1,54 +1,69 @@
-from fastapi import FastAPI
-from fastapi.responses import Response
-from requests_html import AsyncHTMLSession,HTML
+from fastapi import FastAPI, status
+from fastapi.responses import Response, JSONResponse
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
-from rfeed import *
+from rfeed import Item, Feed
+import time
+import uvicorn
 
 app = FastAPI()
 
 
 @app.get("/")
 async def main():
-    asession = AsyncHTMLSession()
+    print("Settings Up WebDriver...")
     max_attempts = 10
-    attempt = 0
-    while True:
-        r = await asession.get("https://wizdom.xyz/")
-        print("Trying to Render Site JavaScript... ")
-        try:
-            await r.html.arender()
-            search_check=r.html.find(".v-card__title")
-            if len(search_check) >1:
-                text = r.html.html
-                r.close()
-                break
-            else:
-                print(f"Site JavaScript Render Failed on attempt {attempt}.")
-                attempt += 1
-            
-        except:
-            print(f"Site JavaScript Render Failed on attempt {attempt}.")
-            attempt += 1
-    else:
-        print(f"Failed To Render Site After {max_attempts} attempts")
-        raise ValueError(f'Failed To Render Site After {max_attempts} attempts')
-    print("Site JS Render Achieved")
-    print("Scraping Site Data...")
-    soup = BeautifulSoup(text,"html.parser")
+    max_result = 60
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--window-size=1920x1080")
+    options.add_argument("--disable-dev-shm-usage")
+    driver = webdriver.Chrome(options=options)
+
+    driver.get("https://wizdom.xyz/")
+    time.sleep(5)
+
     movies = []
-    for movie_card in soup.findAll("div",attrs={"class": "poster col-md-3 col-lg-2 col-xl-1 col-6"}):
-        movies.append(Item(
-            title=movie_card.find("div",attrs={"class": "v-card__title poster-title"}).text,
-            description=movie_card.find('a').attrs["href"].split("/movie/")[1]
-        ))
+    print("Scraping Movies....")
+    try:
+        attempts = 0
+        while attempts < max_attempts and len(movies) < max_result:
+            rendered_html = driver.page_source
+            soup = BeautifulSoup(rendered_html, "html.parser")
+            movie_cards_search = soup.findAll(
+                "div", class_="v-card-title poster-title")
+            if movie_cards_search:
+                for movie_card in movie_cards_search:
+                    movies.append(Item(
+                        title=movie_card.text,
+                        description=movie_card.find_parent("a").attrs["href"].split(
+                            "/movie/")[1]
+                    ))
+                    if len(movies) >= max_result:
+                        break
+            else:
+                attempts += 1
 
-    feed = rfeed.Feed(title="Wizdom Rss",
-                    description = "Hebrew Subtitles Rss Feed,",
-                    language="en-US",
-                    items=movies,
-                    link="https://wizdom.xyz/"
-                    )
-    print("Movies RSS Feed Generated")
-    print("Returning Passing RSS Feed to Browser Client...")
-    return Response(content=feed.rss(), media_type="application/xml")
+        driver.quit()
+        print("Movies Scrap Done!")
+        print("Generating RSS Feed...")
+        if len(movies) >= max_result:
+            feed = Feed(
+                title="Wizdom RSS",
+                description="Hebrew Subtitles Rss Feed",
+                language="en-US",
+                items=movies,
+                link="https://wizdom.xyz/"
+            )
+            return Response(content=feed.rss(), media_type="application/xml", status_code=status.HTTP_200_OK)
 
+    except Exception as e:
+        driver.quit()
+        return JSONResponse(content={"Error": str(e)}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8020)

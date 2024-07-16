@@ -1,47 +1,42 @@
 # Wizdom Movies RSS
 
-Get Wizdom RSS feed using this server.
+Generate Wizdom.xyz RSS feed using this docker container.
 
-Can be Added To Radarr as a list.
-
-##  Why i made it
-
-I was trying to find a wizdom.xyz RSS Feed for my Radarr setup but couldn't find anything related on the internet.
-
-I contacted the site staff through email but received negative feedback in response.
-
-So, I decided to create it myself.
-
-I noticed that the site's HTML renders its movie cards with JavaScript, which presented some challenges for me, However, thankfully, I found the solution.
+Can be Added To Radarr Movie Manager as a list.
 
 ## How Its Achieved
-- JS Rendered HTML Content retrived using request-html.
-- Multiple Attempts To Achieve JS Rednered HTML.
-- Data is Scraped using beautifulsoup4.
-- RSS is generated using rfeed.
+
+- JS Rendered HTML Content retrived using Selenium Chrome WebDriver.
+- Data is Scraped using BeautifulSoup4.
+- RSS is generated using Rfeed.
 
 ## Setup
 
-docker:
+Docker:
 ```
-docker run -p 8020:8000 docker.io/randomg1/wizdom-movies-rss:2
+docker run -p 8020:8000 docker.io/randomg1/wizdom-movies-rss
 ```
 
-docker-compose:
+Docker-compose:
 ```
 version: '4'
 services:
   wizdom-movies-rss:
     container_name: wizdom-rss
-    image: docker.io/randomg1/wizdom-movies-rss:2
+    image: docker.io/randomg1/wizdom-movies-rss:latest
     ports:
       - "8020:8000"
     restart: unless-stopped
 ```
 
+Manually :
+```
+git clone https://github.com/SunLaria/Wizdom-Movies-RSS.git
+cd Wizdom-Movies-RSS
+python app/main.py
+```
 
 ## Usage
-- First Link Entry, Downloads Chromium - Takes More Time
 - Go To "http://localhost:8020" Or "http://127.0.0.1:8020"
 - See docker interactive shell for notifications.
 

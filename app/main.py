@@ -14,7 +14,6 @@ app = FastAPI()
 
 @app.get("/")
 async def main():
-    max_attempts = 10
     max_result = 60
     options = Options()
     options.add_argument("--headless")
@@ -22,6 +21,7 @@ async def main():
     options.add_argument("--no-sandbox")
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("log-level=3")
     try:
         logger.debug("Starting WebDriver...")
         driver = webdriver.Chrome(options=options)
@@ -29,8 +29,7 @@ async def main():
         time.sleep(5)
         movies = []
         logger.debug("Scraping Movies....")
-        attempts = 0
-        while attempts < max_attempts and len(movies) < max_result:
+        while len(movies) < max_result:
             rendered_html = driver.page_source
             soup = BeautifulSoup(rendered_html, "html.parser")
             movie_cards_search = soup.findAll(
@@ -42,24 +41,19 @@ async def main():
                         description=movie_card.find_parent("a").attrs["href"].split(
                             "/movie/")[1]
                     ))
-                    if len(movies) >= max_result:
-                        break
-            else:
-                attempts += 1
 
         driver.quit()
         logger.success("Movies Scrap Done!")
         logger.debug("Generating RSS Feed...")
-        if len(movies) >= max_result:
-            feed = Feed(
-                title="Wizdom RSS",
-                description="Hebrew Subtitles Rss Feed",
-                language="en-US",
-                items=movies,
-                link="https://wizdom.xyz/"
-            )
-            logger.success("RSS Feed Generated!")
-            return Response(content=feed.rss(), media_type="application/xml", status_code=status.HTTP_200_OK)
+        feed = Feed(
+            title="Wizdom RSS",
+            description="Hebrew Subtitles Rss Feed",
+            language="en-US",
+            items=movies,
+            link="https://wizdom.xyz/"
+        )
+        logger.success("RSS Feed Generated!")
+        return Response(content=feed.rss(), media_type="application/xml", status_code=status.HTTP_200_OK)
 
     except Exception as e:
         driver.quit()
